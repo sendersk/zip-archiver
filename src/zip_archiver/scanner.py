@@ -21,6 +21,16 @@ class FileScanner:
         """
 
         if self.recursive:
-            return [path for path in self.directory.rglob("*") if path.is_file()]
+            files = [
+                path
+                for path in self.directory.rglob("*")
+                if path.is_file()
+            ]
+        else:
+            files = [
+                path
+                for path in self.directory.iterdir()
+                if path.is_file()
+            ]
 
-        return [path for path in self.directory.iterdir() if path.is_file()]
+        return sorted(files)
