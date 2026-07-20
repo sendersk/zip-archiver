@@ -33,3 +33,27 @@ def test_return_none_when_filename_has_no_year() -> None:
     file = Path("invoice.pdf")
 
     assert resolver.get_filename_year(file) is None
+
+def test_resolve_year_from_filename() -> None:
+    """Should resolve year using filename strategy."""
+
+    resolver = FileDateResolver()
+
+    file = Path("report_2024.pdf")
+
+    assert resolver.resolve_year(file, "filename") == 2024
+
+
+def test_invalid_strategy_raises_value_error() -> None:
+    """Should raise ValueError for unsupported strategy."""
+
+    resolver = FileDateResolver()
+
+    file = Path("example.txt")
+
+    try:
+        resolver.resolve_year(file, "invalid")
+    except ValueError:
+        return
+
+    assert False
