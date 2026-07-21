@@ -1,3 +1,4 @@
+from pathlib import Path
 from pydantic import BaseModel, Field
 
 
@@ -19,3 +20,11 @@ class AppConfig(BaseModel):
     """Application configuration."""
 
     archive: ArchiveConfig
+
+
+class ArchiveEntry(BaseModel):
+    """Represents a single archive."""
+
+    year: int
+    archive_name: str
+    files: list[Path]
