@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 
 from zip_archiver.date_resolver import FileDateResolver
@@ -32,6 +33,10 @@ class ArchivePlanner:
             if year is None:
                 continue
 
+            if year == current_year:
+                continue
+
+            current_year = datetime.now().year
             grouped[year].append(file)
 
         plans: list[ArchiveEntry] = []
