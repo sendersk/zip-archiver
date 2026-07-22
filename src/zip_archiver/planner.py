@@ -30,13 +30,14 @@ class ArchivePlanner:
         for file in files:
             year = self.resolver.resolve_year(file, self.date_source)
 
+            current_year = datetime.now().year
+
             if year is None:
                 continue
 
             if year == current_year:
                 continue
 
-            current_year = datetime.now().year
             grouped[year].append(file)
 
         plans: list[ArchiveEntry] = []
