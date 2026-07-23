@@ -25,3 +25,24 @@ def test_create_archive(tmp_path: Path) -> None:
 
     with ZipFile(archive) as zip_file:
         assert "document.txt" in zip_file.namelist()
+
+def test_verify_archive(tmp_path: Path) -> None:
+    """Should verify a valid archive."""
+
+    file = tmp_path / "file.txt"
+    file.write_text("data")
+
+    plan = ArchiveEntry(
+        year=2025,
+        archive_name="archive.zip",
+        files=[file],
+    )
+
+    archiver = ZipArchiver()
+
+    archive = archiver.create_archive(
+        tmp_path,
+        plan,
+    )
+
+    assert archiver.verify_archive(archive)
