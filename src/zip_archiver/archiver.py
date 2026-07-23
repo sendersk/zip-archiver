@@ -34,3 +34,23 @@ class ZipArchiver:
                 archive.write(file, arcname=file.name)
 
         return archive_plan
+
+    def verify_archive(
+            self,
+            archive_path: Path,
+    ) -> bool:
+        """
+        Verify that a ZIP archive is valid.
+
+        Args:
+            archive_path: Path to the archive
+
+        Returns:
+            True if the archive is valid.
+        """
+
+        try:
+            with ZipFile(archive_path) as archive:
+                return archive.testzip() is None
+        except Exception:
+            return False
