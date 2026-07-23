@@ -54,3 +54,18 @@ class ZipArchiver:
                 return archive.testzip() is None
         except Exception:
             return False
+
+    def remove_originals(
+            self,
+            plan: ArchiveEntry,
+    ) -> None:
+        """
+        Remove archived files.
+
+        Args:
+            plan: Archive definition.
+        """
+
+        for file in plan.files:
+            if file.exists():
+                file.unlink()
