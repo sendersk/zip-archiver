@@ -46,3 +46,21 @@ def test_verify_archive(tmp_path: Path) -> None:
     )
 
     assert archiver.verify_archive(archive)
+
+def test_remove_originals(tmp_path: Path) -> None:
+    """Should remove archived files."""
+
+    file = tmp_path / "document.txt"
+    file.write_text("data")
+
+    plan = ArchiveEntry(
+        year=2025,
+        archive_name="archive.zip",
+        files=[file],
+    )
+
+    archiver = ZipArchiver()
+
+    archiver.remove_originals(plan)
+
+    assert not file.exists()
