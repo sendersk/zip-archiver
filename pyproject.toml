@@ -26,3 +26,6 @@ packages = ["src/zip_archiver"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[project.scripts]
+zip-archiver = "zip_archiver.main:main"
