@@ -69,3 +69,34 @@ class ZipArchiver:
         for file in plan.files:
             if file.exists():
                 file.unlink()
+
+    def archive(
+            self,
+            directory: Path,
+            plan: ArchiveEntry,
+            remove_originals: bool = False,
+    ) -> Path:
+        """
+        Execute the complete archive workflow.
+
+        Args:
+            directory: Root directory.
+            plan: Archive definition.
+            remove_originals: Remove source files after successful archiving.
+
+        Returns:
+            Path to the created archive.
+
+        Raises:
+            RuntimeError: If archive verification fails.
+        """
+
+        archive = self.create_archive(directory, plan,)
+
+        if not self.verify_archive(archive):
+            raise RuntimeError("Archive verification failed.")
+
+        if remove_originals:
+            self.remove_originals(plan)
+
+        return archive
