@@ -65,6 +65,11 @@ def archive(
 
         typer.echo(f"Created {plan.archive_name}")
 
+        typer.echo()
+        typer.echo("Archive process completed.")
+        typer.echo(f"Archives created: {len(plans)}")
+
+
 
 @app.command()
 def version() -> None:
