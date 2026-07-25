@@ -1,8 +1,55 @@
+from pathlib import Path
+
 import typer
+
+from zip_archiver.archiver import ZipArchiver
+from zip_archiver.config import load_config
+from zip_archiver.date_resolver import FileDateResolver
+from zip_archiver.planner import ArchivePlanner
+from zip_archiver.scanner import FileScanner
 
 app = typer.Typer(
     help="Archive files from previous years into ZIP archives."
 )
+
+
+@app.command()
+def archive(
+        directory: Path = typer.Argument(
+            ...,
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+            help="Directory to archive."
+        ),
+) -> None:
+    """Archive old files."""
+
+    config = load_config()
+
+    scanner = FileScanner(directory)
+    resolver = FileDateResolver()
+
+    planner = ArchivePlanner(
+        resolver,
+        config.archive.date_source,
+    )
+
+    archiver = ZipArchiver()
+
+    files = scanner.scan()
+
+    plans = planner.create_plan(directory, files)
+
+    for plan in plans:
+        archiver.archive(
+            directory,
+            plan,
+            remove_originals=config.archive.remove_originals,
+        )
+
+        typer.echo(f"Created {plan.archive_name}")
 
 
 @app.command()
