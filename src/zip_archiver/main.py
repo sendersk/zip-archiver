@@ -23,6 +23,11 @@ def archive(
             resolve_path=True,
             help="Directory to archive."
         ),
+        dry_run: bool = typer.Option(
+            False,
+            "--dry-run",
+            help="Preview archives without creating them."
+        ),
 ) -> None:
     """Archive old files."""
 
@@ -43,6 +48,15 @@ def archive(
     plans = planner.create_plan(directory, files)
 
     for plan in plans:
+
+        if dry_run:
+            typer.echo(f"[DRY-RUN] {plan.archive_name}")
+
+            for file in plan.files:
+                typer.echo(f"   - {file.name}")
+
+            continue
+
         archiver.archive(
             directory,
             plan,
