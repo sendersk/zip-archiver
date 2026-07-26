@@ -28,6 +28,11 @@ def archive(
             "--dry-run",
             help="Preview archives without creating them."
         ),
+        verbose: bool = typer.Option(
+            False,
+            "--verbose",
+            help="Display processed files."
+        ),
 ) -> None:
     """Archive old files."""
 
@@ -56,6 +61,12 @@ def archive(
                 typer.echo(f"   - {file.name}")
 
             continue
+
+        if verbose:
+            typer.echo()
+
+            for file in plan.files:
+                typer.echo(f"   {file.name}")
 
         archiver.archive(
             directory,
