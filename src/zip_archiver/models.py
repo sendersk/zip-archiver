@@ -28,3 +28,12 @@ class ArchiveEntry(BaseModel):
     year: int
     archive_name: str
     files: list[Path]
+
+
+class ArchiveReport(BaseModel):
+    """Archive execution summary."""
+
+    archives_created: int
+    files_archived: int
+    total_original_size: int
+    total_archive_size: int
