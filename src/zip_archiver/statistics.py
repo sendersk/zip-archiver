@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from pathlib import Path
 
 from zip_archiver.models import (
@@ -186,7 +187,7 @@ class ArchiveStatistics:
         )
 
         return ArchiveReport(
-            timestamp=None,
+            timestamp=datetime.now(UTC),
             duration_ms=duration_ms,
             directories_scanned=directories_scanned,
             files_scanned=files_scanned,
