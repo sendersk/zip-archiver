@@ -96,6 +96,9 @@ class ArchiveStatistics:
         Build statistics for a single archive.
         """
 
+        if not archive_path.exists():
+            raise FileNotFoundError(f"Archive not found: {archive_path}")
+
         original_size, archive_size = self._calculate_sizes(
             archive_path,
             plan,
@@ -146,6 +149,22 @@ class ArchiveStatistics:
             compression=DEFAULT_COMPRESSION,
         )
 
+    @staticmethod
+    def _calculate_archive_count(
+            archives: list[ArchiveDetails],
+    ) -> int:
+        """
+        Calculate number of generated archives.
+
+        Args:
+            archives: Archive details list.
+
+        Returns:
+            Number of archives.
+        """
+
+        return len(archives)
+
     def create_report(
         self,
         archives: list[Path],
@@ -183,6 +202,8 @@ class ArchiveStatistics:
 
             archive_details.append(details)
 
+            archive_details.sort(key=lambda item: item.year)
+
             total_original_size += details.original_size
             total_archive_size += details.archive_size
             total_saved_space += details.saved_space
@@ -203,7 +224,7 @@ class ArchiveStatistics:
             duration_ms=duration_ms,
             directories_scanned=directories_scanned,
             files_scanned=files_scanned,
-            archives_created=len(archives),
+            archives_created=self._calculate_archive_count(archive_details),
             files_archived=files_archived,
             files_skipped=files_skipped,
             files_failed=files_failed,
