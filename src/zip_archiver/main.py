@@ -64,6 +64,14 @@ def archive(
     # Scan directory
     files = scanner.scan()
 
+    files_scanned = len(files)
+
+    directories_scanned = scanner.count_directories()
+
+    files_archived = 0
+    files_skipped = 0
+    files_failed = 0
+
     # Create archive plan
     plans = planner.create_plan(directory, files)
 
@@ -76,6 +84,8 @@ def archive(
     # Execute archive plan
     for plan in plans:
 
+        files_archived += len(plan.files)
+
         if dry_run:
             typer.echo(f"[DRY-RUN] {plan.archive_name}")
 
@@ -84,20 +94,26 @@ def archive(
                     typer.echo(f"   - {file.name}")
 
             continue
+        try:
+            archive_path = archiver.archive(
+                directory,
+                plan,
+                remove_originals=config.archive.remove_originals,
+            )
 
-        archive_path = archiver.archive(
-            directory,
-            plan,
-            remove_originals=config.archive.remove_originals,
-        )
+            created_archives.append(archive_path)
 
-        created_archives.append(archive_path)
+        except Exception:
+            files_failed += 1
+            continue
 
         typer.echo(f"Created {archive_path.name}")
 
         if verbose:
             for file in plan.files:
                 typer.echo(f"   - {file.name}")
+
+    files_skipped = files_scanned - files_archived
 
     # Skip report generation in dry-run mode
     if dry_run:
@@ -117,9 +133,9 @@ def archive(
         date_source=config.archive.date_source,
         remove_originals=config.archive.remove_originals,
         files_scanned=len(files),
-        directories_scanned=1,
-        files_skipped=0,
-        files_failed=0,
+        directories_scanned=directories_scanned,
+        files_skipped=files_skipped,
+        files_failed=files_failed,
     )
 
     # Save JSON report

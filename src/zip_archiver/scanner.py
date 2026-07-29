@@ -34,3 +34,20 @@ class FileScanner:
             ]
 
         return sorted(files)
+
+    def count_directories(self) -> int:
+        """
+        Count scanned directories.
+
+        Returns:
+            Number of scanned directories.
+        """
+
+        if not self.recursive:
+            return 1
+
+        return sum(
+            1
+            for item in self.directory.rglob("*")
+            if item.is_dir()
+        ) + 1
