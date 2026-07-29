@@ -170,13 +170,13 @@ class ArchiveStatistics:
         archives: list[Path],
         plans: list[ArchiveEntry],
         *,
-        files_archived: int,
-        duration_ms: int,
-        recursive: bool,
-        date_source: str,
-        remove_originals: bool,
-        files_scanned: int,
-        directories_scanned: int,
+        duration_ms: int = 0,
+        recursive: bool = False,
+        date_source: str = "modified",
+        remove_originals: bool = False,
+        files_archived: int | None = None,
+        files_scanned: int = 0,
+        directories_scanned: int = 0,
         files_skipped: int = 0,
         files_failed: int = 0,
     ) -> ArchiveReport:
@@ -225,7 +225,14 @@ class ArchiveStatistics:
             directories_scanned=directories_scanned,
             files_scanned=files_scanned,
             archives_created=self._calculate_archive_count(archive_details),
-            files_archived=files_archived,
+            files_archived=(
+                files_archived
+                if files_archived is not None
+                else sum(
+                    len(plan.files)
+                    for plan in plans
+                )
+            ),
             files_skipped=files_skipped,
             files_failed=files_failed,
             total_original_size=total_original_size,

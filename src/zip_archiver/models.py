@@ -58,25 +58,25 @@ class ArchiveConfiguration(BaseModel):
 class ArchiveReport(BaseModel):
     """Complete archive execution report."""
 
-    timestamp: datetime
+    timestamp: datetime | None = None
 
-    duration_ms: int
+    duration_ms: int = 0
 
-    directories_scanned: int
-    files_scanned: int
+    directories_scanned: int = 0
+    files_scanned: int = 0
 
-    archives_created: int
+    archives_created: int = 0
 
-    files_archived: int
-    files_skipped: int
-    files_failed: int
+    files_archived: int = 0
+    files_skipped: int = 0
+    files_failed: int = 0
 
-    total_original_size: int
-    total_archive_size: int
+    total_original_size: int = 0
+    total_archive_size: int = 0
 
-    saved_space: int
-    compression_ratio: float
+    saved_space: int = 0
+    compression_ratio: float = 0.0
 
-    archives: list[ArchiveDetails]
+    archives: list[ArchiveDetails] = []
 
-    configuration: ArchiveConfiguration
+    configuration: ArchiveConfiguration | None = None
