@@ -1,4 +1,5 @@
 from pathlib import Path
+from time import perf_counter
 
 import typer
 
@@ -40,6 +41,9 @@ def archive(
     """
     Archive files from previous years.
     """
+
+    # Start execution timer
+    start_time = perf_counter()
 
     # Load application configuration
     config = load_config()
@@ -102,10 +106,20 @@ def archive(
         typer.echo(f"Archives planned: {len(plans)}")
         return
 
+    duration_ms = int((perf_counter() - start_time) * 1000)
+
     # Generate archive statistics
     report = statistics.create_report(
         created_archives,
         plans,
+        duration_ms=duration_ms,
+        recursive=config.scan.recursive,
+        date_source=config.archive.date_source,
+        remove_originals=config.archive.remove_originals,
+        files_scanned=len(files),
+        directories_scanned=1,
+        files_skipped=0,
+        files_failed=0,
     )
 
     # Save JSON report
