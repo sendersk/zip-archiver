@@ -9,6 +9,9 @@ from zip_archiver.models import (
 )
 
 
+DEFAULT_COMPRESSION = "ZIP_DEFLATED"
+
+
 class ArchiveStatistics:
     """Build archive execution reports."""
 
@@ -126,13 +129,21 @@ class ArchiveStatistics:
     ) -> ArchiveConfiguration:
         """
         Create configuration snapshot.
+
+        Args:
+            recursive: Recursive scan enabled.
+            date_source: Source of file date.
+            remove_originals: Remove original files.
+
+        Returns:
+            ArchiveConfiguration instance.
         """
 
         return ArchiveConfiguration(
             recursive=recursive,
             date_source=date_source,
             remove_originals=remove_originals,
-            compression="ZIP_DEFLATED",
+            compression=DEFAULT_COMPRESSION,
         )
 
     def create_report(
@@ -140,6 +151,7 @@ class ArchiveStatistics:
         archives: list[Path],
         plans: list[ArchiveEntry],
         *,
+        files_archived: int,
         duration_ms: int,
         recursive: bool,
         date_source: str,
@@ -162,7 +174,7 @@ class ArchiveStatistics:
         for archive_path, plan in zip(
             archives,
             plans,
-            strict=False,
+            strict=True,
         ):
             details = self._build_archive_details(
                 archive_path,
@@ -192,10 +204,7 @@ class ArchiveStatistics:
             directories_scanned=directories_scanned,
             files_scanned=files_scanned,
             archives_created=len(archives),
-            files_archived=sum(
-                len(plan.files)
-                for plan in plans
-            ),
+            files_archived=files_archived,
             files_skipped=files_skipped,
             files_failed=files_failed,
             total_original_size=total_original_size,
