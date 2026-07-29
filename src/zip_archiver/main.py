@@ -6,6 +6,7 @@ import typer
 from zip_archiver.archiver import ZipArchiver
 from zip_archiver.config import load_config
 from zip_archiver.date_resolver import FileDateResolver
+from zip_archiver.logging_config import setup_logging
 from zip_archiver.planner import ArchivePlanner
 from zip_archiver.reporter import JsonReporter
 from zip_archiver.scanner import FileScanner
@@ -42,11 +43,15 @@ def archive(
     Archive files from previous years.
     """
 
+    logger = setup_logging(Path("logs/app.log"))
+
     # Start execution timer
     start_time = perf_counter()
 
     # Load application configuration
     config = load_config()
+
+    logger.info("Archive process started")
 
     # Initialize services
     scanner = FileScanner(directory)
@@ -63,6 +68,13 @@ def archive(
 
     # Scan directory
     files = scanner.scan()
+
+    logger.info(
+        "Files scanned",
+        extra={
+            "files_count": len(files),
+        },
+    )
 
     files_scanned = len(files)
 
@@ -103,7 +115,14 @@ def archive(
 
             created_archives.append(archive_path)
 
-        except Exception:
+        except Exception as exc:
+            logger.exception(
+                "Archive creation failed",
+                extra={
+                    "error": str(exc),
+                },
+            )
+
             files_failed += 1
             continue
 
@@ -138,12 +157,29 @@ def archive(
         files_failed=files_failed,
     )
 
+    logger.info(
+        "Archive created",
+        extra={
+            "archive": str(archive_path),
+            "year": plan.year,
+            "files": len(plan.files)
+        },
+    )
+
     # Save JSON report
     reporter = JsonReporter(
         directory / "reports" / "archive_report.json"
     )
 
     reporter.generate(report)
+
+    logger.info(
+        "Archive process completed",
+        extra={
+            "archives": len(created_archives),
+            "duration_ms": duration_ms,
+        },
+    )
 
     typer.echo()
     typer.echo("Archive process completed.")
