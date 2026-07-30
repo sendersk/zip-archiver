@@ -1,0 +1,14 @@
+services:
+  zip-archiver:
+
+    build: .
+
+    container_name: zip-archiver
+
+    volumes:
+      - ./data:/data
+      - ./logs:/app/logs
+      - ./reports:/app/reports
+
+    command:
+      - /data
